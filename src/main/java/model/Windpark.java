@@ -1,33 +1,14 @@
-package converter;
+package model;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Date;
 
-import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
-import org.json.XML;
+import org.springframework.data.annotation.Id;
 
-public class XMLtoJSON {
+import converter.XMLtoJSON;
 
-	public static JSONObject convertXMLFileToJSON(String filename) {
-		ClassLoader classLoader = XMLtoJSON.class.getClassLoader();
-		File xmlfile = new File(classLoader.getResource(filename).getFile());
-		
-		String content = null;
-		try {
-			content = FileUtils.readFileToString(xmlfile,Charset.defaultCharset());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		JSONObject xmlJsonobject = XML.toJSONObject(content);
-		
-		return xmlJsonobject;
-	}
-	
+public class Windpark {
 
 	public static double round(double value, int places) {
 	    if (places < 0) throw new IllegalArgumentException();
@@ -45,7 +26,7 @@ public class XMLtoJSON {
 		return rounded;
 	}
 	
-	  public  static String randomXML(int id) {
+	  public  String randomXML(int id) {
 		  Date date = new Date(System.currentTimeMillis());
 		  String xml = "<windpark id=\""+id+"\"> <windrad id=\"001\"> <power>"+randomValue(10, 200)+"</power> <blindpower>"+randomValue(10, 200)+"</blindpower>\n"+ 
 			  		"<windspeed>"+randomValue(10, 200)+"</windspeed>\n"+ 
@@ -53,10 +34,21 @@ public class XMLtoJSON {
 			  		"<temperature>"+randomValue(0, 30)+"</temperature>\n" + 
 			  		"<bladeposition>"+randomValue(10, 360)+"</bladeposition>\n"+ 
 			  		"<transfertime>"+date+"</transfertime> </windrad> </windpark>";
-		  
-		  
+		  writeXML(xml);
 		  return xml;
 	  }
 	  
-	  
+	  public void writeXML(String xml) {
+		  try {
+			ClassLoader classLoader = Windpark.class.getClassLoader();
+			File xmlfile = new File(classLoader.getResource("parknodedata.xml").getFile());
+			FileOutputStream fs = new FileOutputStream(xmlfile,true);
+			byte[] strToBytes = xml.getBytes();
+			fs.write(strToBytes);
+			fs.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	  }
 }
