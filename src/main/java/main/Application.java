@@ -13,7 +13,7 @@ import converter.XMLtoJSON;
 import model.Windpark;
 
 public class Application {
-
+public static int counter = 0;
 	public static MongoDatabase connectToDatabase() {
 		MongoClient mongoClient = new MongoClient("localhost", 27017);
 		MongoDatabase db = mongoClient.getDatabase("windparkDb");
@@ -27,15 +27,23 @@ public class Application {
 	
 	public static JSONObject createNodeFile() {
 		Windpark windpark = new Windpark();
-		windpark.randomXML(1);
+		windpark.randomXML(counter);
 		JSONObject json = XMLtoJSON.convertXMLFileToJSON("parknodedata.xml");
 		System.out.println(json.toString(4));
 		return json;
 	}
 	
+	public static void dropCollection(MongoDatabase db) {
+		MongoCollection<org.bson.Document> collection = db.getCollection("parknode");
+		collection.drop();
+	}
+	
 	public static void main(String []args) {
 		MongoDatabase db = connectToDatabase();
+		for(int i=0;i<5;i++) {
 		JSONObject json = createNodeFile();
+		counter++;
 		saveToDatabase(db, json);
+		}
 	}
 }
